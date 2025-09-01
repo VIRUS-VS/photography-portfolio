@@ -5,14 +5,10 @@ const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
 };
 
-// @desc    Auth admin & get token
-// @route   POST /api/admin/login
-// @access  Public
 const authAdmin = async (req, res) => {
   const { email, password } = req.body;
   try {
     const admin = await Admin.findOne({ email });
-    // UPDATED: Use the new matchPassword method
     if (admin && (await admin.matchPassword(password))) {
       res.json({
         _id: admin._id,
@@ -28,9 +24,6 @@ const authAdmin = async (req, res) => {
   }
 };
 
-// @desc    Register a new admin
-// @route   POST /api/admin
-// @access  Public (for initial setup)
 const registerAdmin = async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -54,12 +47,9 @@ const registerAdmin = async (req, res) => {
     }
 };
 
-// @desc    Update admin profile (e.g., password)
-// @route   PUT /api/admin/profile
-// @access  Private/Admin
 const updateAdminProfile = async (req, res) => {
     try {
-        const admin = await Admin.findById(req.admin._id); // req.admin is from our 'protect' middleware
+        const admin = await Admin.findById(req.admin._id);
         if (admin) {
             admin.email = req.body.email || admin.email;
             if (req.body.password) {
