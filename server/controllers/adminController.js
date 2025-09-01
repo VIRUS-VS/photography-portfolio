@@ -7,19 +7,42 @@ const generateToken = (id) => {
 
 const authAdmin = async (req, res) => {
   const { email, password } = req.body;
+  
+  // --- Start of Debugging Logs ---
+  console.log('--- NEW LOGIN ATTEMPT ---');
+  console.log(`Attempting login for email: ${email}`);
+  console.log(`Password received: ${password}`);
+  // --- End of Debugging Logs ---
+
   try {
     const admin = await Admin.findOne({ email });
-    if (admin && (await admin.matchPassword(password))) {
-      res.json({
-        _id: admin._id,
-        email: admin.email,
-        token: generateToken(admin._id),
-      });
+
+    if (admin) {
+        console.log('Admin user was FOUND in the database.');
+        console.log(`Stored Hashed Password is: ${admin.password}`);
+
+        const isMatch = await admin.matchPassword(password);
+        
+        // --- Crucial Debugging Log ---
+        console.log(`Result of password comparison (isMatch): ${isMatch}`);
+
+        if (isMatch) {
+            console.log('SUCCESS: Passwords matched!');
+            res.json({
+                _id: admin._id,
+                email: admin.email,
+                token: generateToken(admin._id),
+            });
+        } else {
+            console.log('FAILURE: Passwords did NOT match.');
+            res.status(401).json({ message: 'Invalid email or password' });
+        }
     } else {
-      res.status(401).json({ message: 'Invalid email or password' });
+        console.log('FAILURE: Admin user was NOT FOUND in the database.');
+        res.status(401).json({ message: 'Invalid email or password' });
     }
   } catch (error) {
-    console.error(error);
+    console.error('--- SEVERE ERROR DURING LOGIN PROCESS ---', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
