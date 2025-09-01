@@ -5,48 +5,33 @@ const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
 };
 
+// @desc    Auth admin & get token
+// @route   POST /api/admin/login
+// @access  Public
 const authAdmin = async (req, res) => {
   const { email, password } = req.body;
-  
-  // --- Start of Debugging Logs ---
-  console.log('--- NEW LOGIN ATTEMPT ---');
-  console.log(`Attempting login for email: ${email}`);
-  console.log(`Password received: ${password}`);
-  // --- End of Debugging Logs ---
-
   try {
     const admin = await Admin.findOne({ email });
 
-    if (admin) {
-        console.log('Admin user was FOUND in the database.');
-        console.log(`Stored Hashed Password is: ${admin.password}`);
-
-        const isMatch = await admin.matchPassword(password);
-        
-        // --- Crucial Debugging Log ---
-        console.log(`Result of password comparison (isMatch): ${isMatch}`);
-
-        if (isMatch) {
-            console.log('SUCCESS: Passwords matched!');
-            res.json({
-                _id: admin._id,
-                email: admin.email,
-                token: generateToken(admin._id),
-            });
-        } else {
-            console.log('FAILURE: Passwords did NOT match.');
-            res.status(401).json({ message: 'Invalid email or password' });
-        }
+    // Use the robust matchPassword method from the model
+    if (admin && (await admin.matchPassword(password))) {
+      res.json({
+        _id: admin._id,
+        email: admin.email,
+        token: generateToken(admin._id),
+      });
     } else {
-        console.log('FAILURE: Admin user was NOT FOUND in the database.');
-        res.status(401).json({ message: 'Invalid email or password' });
+      res.status(401).json({ message: 'Invalid email or password' });
     }
   } catch (error) {
-    console.error('--- SEVERE ERROR DURING LOGIN PROCESS ---', error);
+    console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 };
 
+// @desc    Register a new admin
+// @route   POST /api/admin
+// @access  Public (for initial setup)
 const registerAdmin = async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -70,9 +55,12 @@ const registerAdmin = async (req, res) => {
     }
 };
 
+// @desc    Update admin profile (e.g., password)
+// @route   PUT /api/admin/profile
+// @access  Private/Admin
 const updateAdminProfile = async (req, res) => {
     try {
-        const admin = await Admin.findById(req.admin._id);
+        const admin = await Admin.findById(req.admin._id); // req.admin is from our 'protect' middleware
         if (admin) {
             admin.email = req.body.email || admin.email;
             if (req.body.password) {
