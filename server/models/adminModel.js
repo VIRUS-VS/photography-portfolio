@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt'); // CHANGED from bcryptjs
+const bcrypt = require('bcryptjs'); // REVERTED back to bcryptjs
 
 const adminSchema = mongoose.Schema(
   {
