@@ -14,7 +14,7 @@ export const SiteSettingsProvider = ({ children }) => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const { data } = await axios.get('http://localhost:5000/api/settings');
+        const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/settings`);
         setSettings(data);
         setLoading(false);
       } catch (error) {
