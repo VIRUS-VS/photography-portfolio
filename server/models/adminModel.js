@@ -19,7 +19,6 @@ const adminSchema = mongoose.Schema(
 );
 
 // This function will run before an admin is saved to the database
-// It encrypts the password
 adminSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
     next();
@@ -27,6 +26,11 @@ adminSchema.pre('save', async function (next) {
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
+
+// NEW: Add a method to the model to compare passwords
+adminSchema.methods.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
 
 const Admin = mongoose.model('Admin', adminSchema);
 

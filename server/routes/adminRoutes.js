@@ -1,13 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { authAdmin, registerAdmin } = require('../controllers/adminController');
+const { authAdmin, registerAdmin, updateAdminProfile } = require('../controllers/adminController');
+const { protect } = require('../middleware/authMiddleware');
 
-// Route for registering a new admin
-// POST /api/admin
 router.post('/', registerAdmin);
-
-// Route for admin login
-// POST /api/admin/login
 router.post('/login', authAdmin);
+
+// NEW: Add a protected route for updating the profile
+router.put('/profile', protect, updateAdminProfile);
 
 module.exports = router;

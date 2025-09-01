@@ -40,10 +40,8 @@ const AdminDashboardPage = () => {
     const uploadFileHandler = async (e) => {
       let file = e.target.files[0];
       if (!file) return;
-  
       setUploading(true);
       setUploadError(null);
-  
       try {
         if (file.type === 'image/heic' || file.type === 'image/heif' || file.name.toLowerCase().endsWith('.heic')) {
           const convertedBlob = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.8 });
@@ -51,13 +49,11 @@ const AdminDashboardPage = () => {
         }
         const formData = new FormData();
         formData.append('image', file);
-        
         const config = { headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${adminInfo.token}` } };
         const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/upload`, formData, config);
         setCoverImage(data.image);
       } catch (error) {
         setUploadError('File type not supported or upload failed.');
-        console.error(error);
       } finally {
           setUploading(false);
       }
@@ -65,7 +61,6 @@ const AdminDashboardPage = () => {
   
     const submitHandler = async (e) => {
       e.preventDefault();
-      setError(null);
       if (!coverImage) {
         setError('Please upload a cover image first.');
         return;
@@ -81,7 +76,6 @@ const AdminDashboardPage = () => {
         document.getElementById('image-file').value = null;
       } catch (error) {
         setError('Failed to create gallery. Please check all fields.');
-        console.error(error);
       }
     };
   
@@ -93,7 +87,6 @@ const AdminDashboardPage = () => {
               fetchGalleries();
           } catch (error) {
               alert('Could not delete gallery.');
-              console.error(error);
           }
       }
     }
@@ -102,7 +95,10 @@ const AdminDashboardPage = () => {
       <div className="pt-24 container mx-auto px-4">
         <div className="flex justify-between items-center mb-10">
           <h1 className="text-3xl font-light">Admin Dashboard</h1>
-          <button onClick={logoutHandler} className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Logout</button>
+          <div className="flex items-center space-x-4">
+              <Link to="/admin/profile" className="text-sm text-gray-300 hover:text-white">Update Profile</Link>
+              <button onClick={logoutHandler} className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Logout</button>
+          </div>
         </div>
         <div className="mb-10 p-4 bg-gray-800 rounded border border-gray-700">
           <Link to="/admin/settings" className="text-lg font-semibold text-blue-400 hover:underline">

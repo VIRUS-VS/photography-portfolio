@@ -8,6 +8,7 @@ import AdminLoginPage from './pages/AdminLoginPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import ManageGalleryPage from './pages/ManageGalleryPage';
 import SiteSettingsPage from './pages/SiteSettingsPage';
+import AdminProfilePage from './pages/AdminProfilePage'; // Import the new page
 import { SiteSettingsProvider } from './context/SiteSettingsContext';
 
 function App() {
@@ -19,11 +20,11 @@ function App() {
           <main className="flex-grow">
             <Routes>
               <Route path="/" element={<HomePage />} />
-              {/* Removed /about and /contact routes */}
               <Route path="/admin/login" element={<AdminLoginPage />} />
               <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
               <Route path="/admin/gallery/:id" element={<ManageGalleryPage />} />
               <Route path="/admin/settings" element={<SiteSettingsPage />} />
+              <Route path="/admin/profile" element={<AdminProfilePage />} /> {/* Add the new route */}
             </Routes>
           </main>
           <Footer />
