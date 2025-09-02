@@ -1,17 +1,31 @@
-// config/db.js
+// // config/db.js
+
+// const mongoose = require('mongoose');
+
+// const connectDB = async () => {
+//   try {
+//     // Connect to MongoDB using the connection string from the .env file
+//     // The options object is updated to handle modern Node.js and Mongoose versions
+//     const conn = await mongoose.connect(process.env.MONGO_URI);
+    
+//     console.log(`MongoDB Connected: ${conn.connection.host}`);
+//   } catch (error) {
+//     console.error(`Error: ${error.message}`);
+//     process.exit(1); // Exit with failure
+//   }
+// };
+
+// module.exports = connectDB;
 
 const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    // Connect to MongoDB using the connection string from the .env file
-    // The options object is updated to handle modern Node.js and Mongoose versions
     const conn = await mongoose.connect(process.env.MONGO_URI);
-    
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error(`Error: ${error.message}`);
-    process.exit(1); // Exit with failure
+    process.exit(1);
   }
 };
 

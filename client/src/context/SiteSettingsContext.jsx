@@ -1,11 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-
 const SiteSettingsContext = createContext();
-
-export const useSiteSettings = () => {
-  return useContext(SiteSettingsContext);
-};
+export const useSiteSettings = () => useContext(SiteSettingsContext);
 
 export const SiteSettingsProvider = ({ children }) => {
   const [settings, setSettings] = useState(null);
@@ -16,24 +12,14 @@ export const SiteSettingsProvider = ({ children }) => {
       try {
         const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/settings`);
         setSettings(data);
-        setLoading(false);
       } catch (error) {
         console.error('Failed to fetch site settings:', error);
+      } finally {
         setLoading(false);
       }
     };
-
     fetchSettings();
   }, []);
 
-  const value = {
-    settings,
-    loading,
-  };
-
-  return (
-    <SiteSettingsContext.Provider value={value}>
-      {children}
-    </SiteSettingsContext.Provider>
-  );
+  return <SiteSettingsContext.Provider value={{ settings, loading }}>{children}</SiteSettingsContext.Provider>;
 };

@@ -1,32 +1,4 @@
 const mongoose = require('mongoose');
-
-const settingsSchema = mongoose.Schema({
-  // We use a singleton pattern with a fixed name
-  name: {
-    type: String,
-    required: true,
-    default: 'siteSettings',
-    unique: true,
-  },
-  heroImage: { type: String },
-  aboutImage1: { type: String },
-  aboutImage2: { type: String },
-  videoUrl: { type: String },
-  heroTitle: { type: String },
-  heroSubtitle: { type: String },
-  aboutTitle: { type: String },
-  aboutText: { type: String },
-  videoTitle: { type: String },
-  videoText: { type: String },
-  contactEmail: { type: String },
-  contactPhone: { type: String },
-  instagramUrl: { type: String },
-  facebookUrl: { type: String },
-  twitterUrl: { type: String },
-}, {
-  timestamps: true,
-});
-
+const settingsSchema = mongoose.Schema({ name: { type: String, required: true, default: 'siteSettings', unique: true }, heroImage: String, aboutImage1: String, aboutImage2: String, videoUrl: String, heroTitle: String, heroSubtitle: String, aboutTitle: String, aboutText: String, videoTitle: String, videoText: String, contactEmail: String, contactPhone: String, instagramUrl: String, facebookUrl: String, twitterUrl: String }, { timestamps: true });
 const Settings = mongoose.model('Settings', settingsSchema);
-
 module.exports = Settings;

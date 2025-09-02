@@ -19,17 +19,12 @@ const AdminDashboardPage = () => {
       try {
         const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/galleries`);
         setGalleries(data);
-      } catch (error) {
-        console.error('Could not fetch galleries');
-      }
+      } catch (error) { console.error('Could not fetch galleries'); }
     };
   
     useEffect(() => {
-      if (!adminInfo) {
-        navigate('/admin/login');
-      } else {
-        fetchGalleries();
-      }
+      if (!adminInfo) navigate('/admin/login');
+      else fetchGalleries();
     }, [adminInfo, navigate]);
   
     const logoutHandler = () => {
@@ -61,33 +56,26 @@ const AdminDashboardPage = () => {
   
     const submitHandler = async (e) => {
       e.preventDefault();
-      if (!coverImage) {
-        setError('Please upload a cover image first.');
-        return;
-      }
+      if (!coverImage) { setError('Please upload a cover image first.'); return; }
       try {
         const config = { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminInfo.token}` } };
         await axios.post(`${import.meta.env.VITE_API_URL}/api/galleries`, { title, description, coverImage }, config);
         alert('Gallery created successfully!');
         fetchGalleries();
-        setTitle('');
-        setDescription('');
-        setCoverImage('');
+        setTitle(''); setDescription(''); setCoverImage('');
         document.getElementById('image-file').value = null;
       } catch (error) {
         setError('Failed to create gallery. Please check all fields.');
       }
     };
   
-      const deleteHandler = async (id) => {
+    const deleteHandler = async (id) => {
       if (window.confirm('Are you sure you want to delete this gallery? This will also delete all photos inside it and cannot be undone.')) {
           try {
               const config = { headers: { Authorization: `Bearer ${adminInfo.token}` } };
               await axios.delete(`${import.meta.env.VITE_API_URL}/api/galleries/${id}`, config);
               fetchGalleries();
-          } catch (error) {
-              alert('Could not delete gallery.');
-          }
+          } catch (error) { alert('Could not delete gallery.'); }
       }
     }
   
@@ -100,11 +88,7 @@ const AdminDashboardPage = () => {
               <button onClick={logoutHandler} className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Logout</button>
           </div>
         </div>
-        <div className="mb-10 p-4 bg-gray-800 rounded border border-gray-700">
-          <Link to="/admin/settings" className="text-lg font-semibold text-blue-400 hover:underline">
-            &#9881; Manage Site-Wide Settings (Hero, About, Video, Footer, etc.)
-          </Link>
-        </div>
+        <div className="mb-10 p-4 bg-gray-800 rounded border border-gray-700"><Link to="/admin/settings" className="text-lg font-semibold text-blue-400 hover:underline">&#9881; Manage Site-Wide Settings</Link></div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
           <div>
             <h2 className="text-2xl font-light mb-4 border-b border-gray-700 pb-2">Create New Gallery</h2>
@@ -135,6 +119,5 @@ const AdminDashboardPage = () => {
         </div>
       </div>
     );
-  };
-  
-  export default AdminDashboardPage;
+};
+export default AdminDashboardPage;

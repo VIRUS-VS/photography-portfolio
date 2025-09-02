@@ -14,19 +14,12 @@ connectDB();
 
 const app = express();
 
-// --- START OF THE CRUCIAL FIX ---
-// We are explicitly telling the backend that the frontend at this URL is allowed to make requests.
 const corsOptions = {
-  origin: 'https://photography-portfolio-three-delta.vercel.app',
+  origin: '[https://photography-portfolio-three-delta.vercel.app](https://photography-portfolio-three-delta.vercel.app)',
   optionsSuccessStatus: 200,
 };
-console.log('CORS configured for origin:', corsOptions.origin); // For debugging
 app.use(cors(corsOptions));
-// --- END OF THE CRUCIAL FIX ---
-
 app.use(express.json());
-
-// Make the 'uploads' folder static (though we now use Cloudinary)
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
 app.get('/', (req, res) => {

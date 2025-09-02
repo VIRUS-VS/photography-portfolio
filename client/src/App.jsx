@@ -3,17 +3,16 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
-// AboutPage and ContactPage are no longer needed
 import AdminLoginPage from './pages/AdminLoginPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import ManageGalleryPage from './pages/ManageGalleryPage';
 import SiteSettingsPage from './pages/SiteSettingsPage';
-import AdminProfilePage from './pages/AdminProfilePage'; // Import the new page
+import AdminProfilePage from './pages/AdminProfilePage';
 import { SiteSettingsProvider } from './context/SiteSettingsContext';
 
 function App() {
   return (
-    <SiteSettingsProvider> 
+    <SiteSettingsProvider>
       <Router>
         <div className="bg-gray-900 text-white min-h-screen flex flex-col">
           <Header />
@@ -24,7 +23,7 @@ function App() {
               <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
               <Route path="/admin/gallery/:id" element={<ManageGalleryPage />} />
               <Route path="/admin/settings" element={<SiteSettingsPage />} />
-              <Route path="/admin/profile" element={<AdminProfilePage />} /> {/* Add the new route */}
+              <Route path="/admin/profile" element={<AdminProfilePage />} />
             </Routes>
           </main>
           <Footer />

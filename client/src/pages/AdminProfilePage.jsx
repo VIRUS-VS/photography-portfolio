@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 const AdminProfilePage = () => {
-  const navigate = useNavigate();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState(null);
@@ -20,15 +19,9 @@ const AdminProfilePage = () => {
     } else {
       try {
         const config = {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${adminInfo.token}`,
-          },
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminInfo.token}` },
         };
-
         const { data } = await axios.put(`${import.meta.env.VITE_API_URL}/api/admin/profile`, { password }, config);
-        
-        // Update local storage with new token in case it changes
         localStorage.setItem('adminInfo', JSON.stringify(data));
         setMessage('Password updated successfully!');
       } catch (err) {
@@ -44,7 +37,6 @@ const AdminProfilePage = () => {
         <h1 className="text-2xl text-center font-light mb-6">Update Profile</h1>
         {message && <p className="text-green-500 text-center text-sm mb-4">{message}</p>}
         {error && <p className="text-red-500 text-center text-sm mb-4">{error}</p>}
-        
         <div className="mb-4">
           <label className="block text-gray-300 text-sm font-bold mb-2" htmlFor="password">New Password</label>
           <input className="shadow appearance-none border rounded w-full py-2 px-3 bg-gray-700 text-gray-200" id="password" type="password" placeholder="Enter new password" value={password} onChange={(e) => setPassword(e.target.value)} />
@@ -54,13 +46,10 @@ const AdminProfilePage = () => {
           <input className="shadow appearance-none border rounded w-full py-2 px-3 bg-gray-700 text-gray-200" id="confirmPassword" type="password" placeholder="Confirm new password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
         </div>
         <div className="flex items-center justify-between">
-          <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full" type="submit">
-            Update Password
-          </button>
+          <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full" type="submit">Update Password</button>
         </div>
       </form>
     </div>
   );
 };
-
 export default AdminProfilePage;
