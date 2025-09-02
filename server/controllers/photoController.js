@@ -1,6 +1,8 @@
 const Photo = require('../models/photoModel');
-const Gallery = require('../models.galleryModel');
+const Gallery = require('../models/galleryModel'); // This is the corrected line
 const cloudinary = require('cloudinary').v2;
+
+// ... the rest of the file remains the same ...
 
 const uploadPhotos = async (req, res) => {
   const { galleryId } = req.params;
@@ -35,3 +37,5 @@ const deletePhoto = async (req, res) => {
 };
 
 module.exports = { uploadPhotos, getPhotosForGallery, deletePhoto };
+
+//new code
