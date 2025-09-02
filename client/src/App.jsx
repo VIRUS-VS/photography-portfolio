@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
@@ -10,6 +10,17 @@ import SiteSettingsPage from './pages/SiteSettingsPage';
 import AdminProfilePage from './pages/AdminProfilePage';
 import { SiteSettingsProvider } from './context/SiteSettingsContext';
 
+// A small helper component to add padding on non-home pages
+const PageLayout = ({ children }) => {
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
+  
+  // Only add top padding if it's NOT the homepage
+  const layoutClass = isHomePage ? '' : 'pt-24 container mx-auto px-4';
+
+  return <div className={layoutClass}>{children}</div>;
+};
+
 function App() {
   return (
     <SiteSettingsProvider>
@@ -19,11 +30,11 @@ function App() {
           <main className="flex-grow">
             <Routes>
               <Route path="/" element={<HomePage />} />
-              <Route path="/admin/login" element={<AdminLoginPage />} />
-              <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
-              <Route path="/admin/gallery/:id" element={<ManageGalleryPage />} />
-              <Route path="/admin/settings" element={<SiteSettingsPage />} />
-              <Route path="/admin/profile" element={<AdminProfilePage />} />
+              <Route path="/admin/login" element={<PageLayout><AdminLoginPage /></PageLayout>} />
+              <Route path="/admin/dashboard" element={<PageLayout><AdminDashboardPage /></PageLayout>} />
+              <Route path="/admin/gallery/:id" element={<PageLayout><ManageGalleryPage /></PageLayout>} />
+              <Route path="/admin/settings" element={<PageLayout><SiteSettingsPage /></PageLayout>} />
+              <Route path="/admin/profile" element={<PageLayout><AdminProfilePage /></PageLayout>} />
             </Routes>
           </main>
           <Footer />
