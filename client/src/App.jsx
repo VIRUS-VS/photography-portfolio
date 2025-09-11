@@ -25,7 +25,7 @@ function App() {
   return (
     <SiteSettingsProvider>
       <Router>
-        <div className="bg-gray-900 text-white min-h-screen flex flex-col">
+        <div className="bg-[#3C1D1D] text-[#E2B842] min-h-screen flex flex-col">
           <Header />
           <main className="flex-grow">
             <Routes>
