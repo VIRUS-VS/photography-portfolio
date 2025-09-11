@@ -1,7 +1,7 @@
 // In frontend/src/pages/GalleryPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import api from '../api/axios'; // <-- 1. CHANGE THIS IMPORT
+import api from '../api/axios.js'; // <-- 1. CHANGE THIS IMPORT
 
 const GalleryPage = () => {
   const { id } = useParams();
