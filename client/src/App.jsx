@@ -10,6 +10,17 @@ import SiteSettingsPage from './pages/SiteSettingsPage';
 import AdminProfilePage from './pages/AdminProfilePage';
 import { SiteSettingsProvider } from './context/SiteSettingsContext';
 
+//new changes
+
+// In frontend/src/App.js
+import GalleryPage from './pages/GalleryPage'; // <-- Import the new page
+
+<Routes>
+  {/* ... your other routes ... */}
+  <Route path="/gallery/:id" element={<GalleryPage />} />
+</Routes>
+
+//till here
 // A small helper component to add padding on non-home pages
 const PageLayout = ({ children }) => {
   const location = useLocation();

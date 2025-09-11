@@ -1,24 +1,92 @@
+// import React, { useState, useEffect } from 'react';
+// import axios from 'axios';
+// import { Link, useLocation } from 'react-router-dom';
+// import HeroSection from '../components/HeroSection';
+// import AboutSection from '../components/AboutSection';
+// import VideoSection from '../components/VideoSection';
+// import GalleryModal from '../components/GalleryModal';
+
+// const HomePage = () => {
+//   const [galleries, setGalleries] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+//   const [selectedGalleryId, setSelectedGalleryId] = useState(null);
+//   const location = useLocation();
+
+//   useEffect(() => {
+//     if (location.state?.scrollTo) {
+//       document.getElementById(location.state.scrollTo)?.scrollIntoView({ behavior: 'smooth' });
+//     }
+//   }, [location]);
+
+//   useEffect(() => {
+//     const fetchGalleries = async () => {
+//       try {
+//         const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/galleries`);
+//         setGalleries(data);
+//       } catch (err) {
+//         setError('Could not fetch galleries.');
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+//     fetchGalleries();
+//   }, []);
+
+//   const isVideo = (url) => url && url.match(/\.(mp4|mov)$/);
+//   const openGalleryModal = (id) => setSelectedGalleryId(id);
+//   const closeGalleryModal = () => setSelectedGalleryId(null);
+
+//   return (
+//     <div>
+//       <HeroSection />
+//       <div id="about-section"><AboutSection /></div>
+//       <div id="work-section" className="container mx-auto px-4 py-16">
+//         <h2 className="text-center text-4xl font-light mb-12">Our Work</h2>
+//         {loading && <p className="text-center">Loading...</p>}
+//         {error && <p className="text-center text-red-500">{error}</p>}
+//         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+//           {galleries.map((gallery) => (
+//             <div key={gallery._id} className="group relative w-full h-80 overflow-hidden cursor-pointer" onClick={() => openGalleryModal(gallery._id)}>
+//               {gallery.coverImage ? (
+//                 isVideo(gallery.coverImage) ? <video src={gallery.coverImage} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300" autoPlay loop muted playsInline /> : <img src={gallery.coverImage} alt={gallery.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300" />
+//               ) : <div className="w-full h-full bg-gray-800 flex items-center justify-center"><p className="text-gray-500">No Image</p></div>}
+//               <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"><h2 className="text-white text-2xl font-semibold">{gallery.title}</h2></div>
+//             </div>
+//           ))}
+//         </div>
+//       </div>
+//       <VideoSection />
+//       {selectedGalleryId && <GalleryModal galleryId={selectedGalleryId} onClose={closeGalleryModal} />}
+//     </div>
+//   );
+// };
+// export default HomePage;
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom'; // 1. Import useNavigate
 import HeroSection from '../components/HeroSection';
 import AboutSection from '../components/AboutSection';
 import VideoSection from '../components/VideoSection';
-import GalleryModal from '../components/GalleryModal';
+// GalleryModal is no longer needed on this page
+// import GalleryModal from '../components/GalleryModal'; 
 
 const HomePage = () => {
   const [galleries, setGalleries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedGalleryId, setSelectedGalleryId] = useState(null);
   const location = useLocation();
+  const navigate = useNavigate(); // 2. Initialize useNavigate
 
+  // This useEffect for scrolling remains unchanged
   useEffect(() => {
     if (location.state?.scrollTo) {
       document.getElementById(location.state.scrollTo)?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [location]);
 
+  // This useEffect for fetching galleries remains unchanged
   useEffect(() => {
     const fetchGalleries = async () => {
       try {
@@ -34,8 +102,56 @@ const HomePage = () => {
   }, []);
 
   const isVideo = (url) => url && url.match(/\.(mp4|mov)$/);
-  const openGalleryModal = (id) => setSelectedGalleryId(id);
-  const closeGalleryModal = () => setSelectedGalleryId(null);
+
+  // The modal state and functions have been removed as they are no longer needed.
+  // const [selectedGalleryId, setSelectedGalleryId] = useState(null);
+  // const openGalleryModal = (id) => setSelectedGalleryId(id);
+  // const closeGalleryModal = () => setSelectedGalleryId(null);
+
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useLocation, useNavigate } from 'react-router-dom'; // 1. Import useNavigate
+import HeroSection from '../components/HeroSection';
+import AboutSection from '../components/AboutSection';
+import VideoSection from '../components/VideoSection';
+// GalleryModal is no longer needed on this page
+// import GalleryModal from '../components/GalleryModal'; 
+
+const HomePage = () => {
+  const [galleries, setGalleries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const location = useLocation();
+  const navigate = useNavigate(); // 2. Initialize useNavigate
+
+  // This useEffect for scrolling remains unchanged
+  useEffect(() => {
+    if (location.state?.scrollTo) {
+      document.getElementById(location.state.scrollTo)?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [location]);
+
+  // This useEffect for fetching galleries remains unchanged
+  useEffect(() => {
+    const fetchGalleries = async () => {
+      try {
+        const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/galleries`);
+        setGalleries(data);
+      } catch (err) {
+        setError('Could not fetch galleries.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchGalleries();
+  }, []);
+
+  const isVideo = (url) => url && url.match(/\.(mp4|mov)$/);
+
+  // The modal state and functions have been removed as they are no longer needed.
+  // const [selectedGalleryId, setSelectedGalleryId] = useState(null);
+  // const openGalleryModal = (id) => setSelectedGalleryId(id);
+  // const closeGalleryModal = () => setSelectedGalleryId(null);
 
   return (
     <div>
@@ -47,18 +163,28 @@ const HomePage = () => {
         {error && <p className="text-center text-red-500">{error}</p>}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {galleries.map((gallery) => (
-            <div key={gallery._id} className="group relative w-full h-80 overflow-hidden cursor-pointer" onClick={() => openGalleryModal(gallery._id)}>
+            // 3. The onClick handler now navigates to the new page
+            <div 
+              key={gallery._id} 
+              className="group relative w-full h-80 overflow-hidden cursor-pointer" 
+              onClick={() => navigate(`/gallery/${gallery._id}`)}
+            >
               {gallery.coverImage ? (
-                isVideo(gallery.coverImage) ? <video src={gallery.coverImage} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300" autoPlay loop muted playsInline /> : <img src={gallery.coverImage} alt={gallery.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300" />
+                isVideo(gallery.coverImage) 
+                  ? <video src={gallery.coverImage} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300" autoPlay loop muted playsInline /> 
+                  : <img src={gallery.coverImage} alt={gallery.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300" />
               ) : <div className="w-full h-full bg-gray-800 flex items-center justify-center"><p className="text-gray-500">No Image</p></div>}
-              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"><h2 className="text-white text-2xl font-semibold">{gallery.title}</h2></div>
+              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <h2 className="text-white text-2xl font-semibold">{gallery.title}</h2>
+              </div>
             </div>
           ))}
         </div>
       </div>
       <VideoSection />
-      {selectedGalleryId && <GalleryModal galleryId={selectedGalleryId} onClose={closeGalleryModal} />}
+      {/* 4. The conditional rendering for GalleryModal is removed */}
     </div>
   );
 };
-export default HomePage;
+
+export default HomePage;            

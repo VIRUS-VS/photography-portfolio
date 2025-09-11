@@ -21,7 +21,7 @@ const Header = () => {
   return (
     <header className="py-6 px-4 absolute top-0 left-0 w-full z-30">
       <div className="container mx-auto flex justify-between items-center">
-        <Link to="/" className="text-2xl font-thin tracking-widest uppercase text-white">
+        <Link to="/" className="text-2xl font-thin tracking-widest uppercase text-[#E2B842]">
           LUXE VOWS
         </Link>
         
