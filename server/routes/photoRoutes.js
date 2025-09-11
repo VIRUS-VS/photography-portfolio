@@ -32,6 +32,7 @@ const multer = require('multer');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const cloudinary = require('cloudinary').v2;
 
+// --- Multer/Cloudinary config (no changes here) ---
 cloudinary.config({ cloud_name: process.env.CLOUDINARY_CLOUD_NAME, api_key: process.env.CLOUDINARY_API_KEY, api_secret: process.env.CLOUDINARY_API_SECRET });
 const storage = new CloudinaryStorage({ cloudinary: cloudinary, params: { folder: 'portfolio_uploads', resource_type: 'auto' } });
 const upload = multer({ storage: storage, fileFilter: (req, file, cb) => {
@@ -45,9 +46,16 @@ const uploadMultiple = (req, res, next) => {
   });
 };
 
-// --- THIS IS THE CORRECTED LINE ---
+
+// --- CORRECTED ROUTES SECTION ---
+// This route supports the NEW public gallery page
 router.get('/gallery/:galleryId', getPhotosForGallery);
 
+// This route supports the EXISTING admin "Manage Gallery" page
+router.get('/:galleryId', getPhotosForGallery);
+
+
+// --- Other routes (no changes here) ---
 router.post('/:galleryId', protect, uploadMultiple, uploadPhotos);
 router.delete('/:id', protect, deletePhoto);
 
