@@ -65,7 +65,7 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useLocation, useNavigate } from 'react-router-dom'; // 1. Import useNavigate
+import { useLocation, useNavigate } from 'react-router-dom';
 import HeroSection from '../components/HeroSection';
 import AboutSection from '../components/AboutSection';
 import VideoSection from '../components/VideoSection';
@@ -77,16 +77,14 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const location = useLocation();
-  const navigate = useNavigate(); // 2. Initialize useNavigate
+  const navigate = useNavigate();
 
-  // This useEffect for scrolling remains unchanged
   useEffect(() => {
     if (location.state?.scrollTo) {
       document.getElementById(location.state.scrollTo)?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [location]);
 
-  // This useEffect for fetching galleries remains unchanged
   useEffect(() => {
     const fetchGalleries = async () => {
       try {
@@ -102,56 +100,6 @@ const HomePage = () => {
   }, []);
 
   const isVideo = (url) => url && url.match(/\.(mp4|mov)$/);
-
-  // The modal state and functions have been removed as they are no longer needed.
-  // const [selectedGalleryId, setSelectedGalleryId] = useState(null);
-  // const openGalleryModal = (id) => setSelectedGalleryId(id);
-  // const closeGalleryModal = () => setSelectedGalleryId(null);
-
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useLocation, useNavigate } from 'react-router-dom'; // 1. Import useNavigate
-import HeroSection from '../components/HeroSection';
-import AboutSection from '../components/AboutSection';
-import VideoSection from '../components/VideoSection';
-// GalleryModal is no longer needed on this page
-// import GalleryModal from '../components/GalleryModal'; 
-
-const HomePage = () => {
-  const [galleries, setGalleries] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const location = useLocation();
-  const navigate = useNavigate(); // 2. Initialize useNavigate
-
-  // This useEffect for scrolling remains unchanged
-  useEffect(() => {
-    if (location.state?.scrollTo) {
-      document.getElementById(location.state.scrollTo)?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [location]);
-
-  // This useEffect for fetching galleries remains unchanged
-  useEffect(() => {
-    const fetchGalleries = async () => {
-      try {
-        const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/galleries`);
-        setGalleries(data);
-      } catch (err) {
-        setError('Could not fetch galleries.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchGalleries();
-  }, []);
-
-  const isVideo = (url) => url && url.match(/\.(mp4|mov)$/);
-
-  // The modal state and functions have been removed as they are no longer needed.
-  // const [selectedGalleryId, setSelectedGalleryId] = useState(null);
-  // const openGalleryModal = (id) => setSelectedGalleryId(id);
-  // const closeGalleryModal = () => setSelectedGalleryId(null);
 
   return (
     <div>
@@ -163,7 +111,6 @@ const HomePage = () => {
         {error && <p className="text-center text-red-500">{error}</p>}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {galleries.map((gallery) => (
-            // 3. The onClick handler now navigates to the new page
             <div 
               key={gallery._id} 
               className="group relative w-full h-80 overflow-hidden cursor-pointer" 
@@ -182,7 +129,6 @@ const HomePage = () => {
         </div>
       </div>
       <VideoSection />
-      {/* 4. The conditional rendering for GalleryModal is removed */}
     </div>
   );
 };
