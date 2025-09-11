@@ -14,14 +14,18 @@ connectDB();
 
 const app = express();
 
-// --- START OF THE CRUCIAL FIX ---
-// The URL is now a simple, correct string.
+// --- START OF THE CORRECTED CODE ---
 const corsOptions = {
-  origin: 'https://photography-portfolio-three-delta.vercel.app',
+  origin: [
+    'https://www.theluxevows.com', // Your new production domain
+    'https://theluxevows.com',     // The non-www version
+    'https://photography-portfolio-three-delta.vercel.app', // The Vercel preview domain
+    'http://localhost:3000'        // For local development
+  ],
   optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
-// --- END OF THE CRUCIAL FIX ---
+// --- END OF THE CORRECTED CODE ---
 
 app.use(express.json());
 
@@ -42,4 +46,3 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-//new code 
