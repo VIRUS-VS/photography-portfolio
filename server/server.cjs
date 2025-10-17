@@ -14,22 +14,31 @@ connectDB();
 
 const app = express();
 
-// --- START OF THE CORRECTED CODE ---
+// --- START OF THE CRUCIAL FIX ---
+// Create a whitelist of allowed domains
+const allowedOrigins = [
+  'https://photography-portfolio-three-delta.vercel.app', // Your Vercel domain
+  'https://theluxevows.com',                            // Your custom domain
+  'https://www.theluxevows.com'                         // The 'www' version
+];
+
 const corsOptions = {
-  origin: [
-    'https://www.theluxevows.com', // Your new production domain
-    'https://theluxevows.com',     // The non-www version
-    'https://photography-portfolio-three-delta.vercel.app', // The Vercel preview domain
-    'http://localhost:3000'        // For local development
-  ],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like Postman or mobile apps)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
   optionsSuccessStatus: 200,
 };
+
 app.use(cors(corsOptions));
-// --- END OF THE CORRECTED CODE ---
+// --- END OF THE CRUCIAL FIX ---
 
 app.use(express.json());
-
-app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
 app.get('/', (req, res) => {
   res.send('API is running...');
