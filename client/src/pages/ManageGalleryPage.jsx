@@ -146,9 +146,18 @@ import heic2any from 'heic2any';
 const ManageGalleryPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  // ... (other state variables) ...
+  const [gallery, setGallery] = useState(null);
+  const [photos, setPhotos] = useState([]);
+  
+  // --- THESE LINES WERE LIKELY MISSING ---
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  // ------------------------------------
 
-  // --- 1. ADD STATE FOR THE EDITABLE FIELDS ---
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState(null);
+  
+  // State for the editable fields
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [credits, setCredits] = useState('');
@@ -165,10 +174,10 @@ const ManageGalleryPage = () => {
       setGallery(galleryRes.data);
       setPhotos(photosRes.data);
       
-      // --- 2. POPULATE THE NEW STATE WITH FETCHED DATA ---
+      // Populate the form state
       setTitle(galleryRes.data.title);
       setDescription(galleryRes.data.description || '');
-      setCredits(galleryRes.data.credits || ''); // Use empty string if null
+      setCredits(galleryRes.data.credits || '');
       
     } catch (err) {
       setError('Could not fetch gallery details.');
@@ -182,7 +191,6 @@ const ManageGalleryPage = () => {
     else fetchGalleryAndPhotos();
   }, [id, adminInfo, navigate]);
 
-  // --- 3. ADD A NEW HANDLER TO UPDATE THE DETAILS ---
   const handleUpdateDetails = async (e) => {
     e.preventDefault();
     try {
@@ -190,21 +198,76 @@ const ManageGalleryPage = () => {
       const payload = { title, description, credits };
       await axios.put(`${import.meta.env.VITE_API_URL}/api/galleries/${id}`, payload, config);
       alert('Gallery details updated!');
-      // Update the main gallery title shown on the page
       setGallery(prev => ({...prev, title}));
     } catch (error) {
       alert('Failed to update details. Please try again.');
     }
   };
-  
-  // ... (uploadFilesHandler, deletePhotoHandler, etc. remain the same) ...
 
+  // ... (uploadFilesHandler, deletePhotoHandler, and other handlers remain the same) ...
+
+  const uploadFilesHandler = async (e) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    setUploadError(null);
+    try {
+      const formData = new FormData();
+      for (let i = 0; i < files.length; i++) {
+        let file = files[i];
+        if (file.type === 'image/heic' || file.type === 'image/heif' || file.name.toLowerCase().endsWith('.heic')) {
+          const convertedBlob = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.8 });
+          file = new File([convertedBlob], `${file.name.split('.')[0]}.jpeg`, { type: 'image/jpeg' });
+        }
+        formData.append('images', file);
+      }
+      const config = { headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${adminInfo.token}` } };
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/photos/${id}`, formData, config);
+      alert('Photos uploaded successfully!');
+      fetchGalleryAndPhotos();
+    } catch (error) {
+      const message = error.response?.data?.message || 'File upload failed. Please try again.';
+      setUploadError(message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const deletePhotoHandler = async (photoId) => {
+    if (window.confirm('Are you sure?')) {
+      try {
+        const config = { headers: { Authorization: `Bearer ${adminInfo.token}` } };
+        await axios.delete(`${import.meta.env.VITE_API_URL}/api/photos/${photoId}`, config);
+        fetchGalleryAndPhotos();
+      } catch (error) {
+        alert('Could not delete photo.');
+      }
+    }
+  };
+
+  const deleteGalleryHandler = async () => {
+    if (window.confirm('Are you sure? This will delete the entire gallery and all its photos.')) {
+      try {
+        const config = { headers: { Authorization: `Bearer ${adminInfo.token}` } };
+        await axios.delete(`${import.meta.env.VITE_API_URL}/api/galleries/${id}`, config);
+        alert('Gallery deleted successfully.');
+        navigate('/admin/dashboard');
+      } catch (error) {
+        alert('Could not delete gallery.');
+      }
+    }
+  };
+
+  const isVideo = (url) => url && url.match(/\.(mp4|mov)$/);
+
+  // This conditional rendering is what causes the crash if 'loading' is not defined
   if (loading) return <p className="text-center pt-24">Loading...</p>;
   if (error) return <p className="text-red-500 text-center pt-24">{error}</p>;
 
   return (
     <div className="pt-24 container mx-auto px-4">
-      <Link to="/admin/dashboard" className="text-blue-400 hover:underline mb-4 inline-block">&larr; Back to Dashboard</Link>
+      {/* ... The rest of your JSX remains the same ... */}
+       <Link to="/admin/dashboard" className="text-blue-400 hover:underline mb-4 inline-block">&larr; Back to Dashboard</Link>
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-light mb-2">Manage Gallery</h1>
@@ -213,7 +276,6 @@ const ManageGalleryPage = () => {
         <button onClick={deleteGalleryHandler} className="bg-red-800 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Delete Entire Gallery</button>
       </div>
       
-      {/* --- 4. ADD THE NEW EDIT FORM --- */}
       <form onSubmit={handleUpdateDetails} className="bg-gray-800 p-6 rounded-lg mb-8">
         <h3 className="text-xl font-light mb-4">Edit Gallery Details</h3>
         <div className="mb-4">
@@ -244,14 +306,29 @@ const ManageGalleryPage = () => {
         </button>
       </form>
       
-      {/* --- The rest of the page (upload form, photos) remains the same --- */}
       <div className="bg-gray-800 p-6 rounded-lg mb-8">
-         {/* ... upload form ... */}
+        <h3 className="text-xl font-light mb-4">Upload New Photos/Videos</h3>
+        <input type="file" id="image-files" onChange={uploadFilesHandler} className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:font-semibold file:bg-gray-700 file:text-gray-200 hover:file:bg-gray-600" multiple />
+        {uploading && <p className="text-blue-400 text-sm mt-2">Uploading...</p>}
+        {uploadError && <p className="text-red-500 text-sm mt-2">{uploadError}</p>}
       </div>
       <div>
-         {/* ... photos grid ... */}
+        <h3 className="text-xl font-light mb-4">Uploaded Photos</h3>
+        {photos.length === 0 ? <p className="text-gray-500">No photos uploaded yet.</p> : (
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {photos.map(photo => (
+              <div key={photo._id} className="relative group">
+                {isVideo(photo.imageUrl) ? <video src={photo.imageUrl} className="w-full h-40 object-cover rounded-lg" /> : <img src={photo.imageUrl} alt="" className="w-full h-40 object-cover rounded-lg" />}
+                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
+                  <button onClick={() => deletePhotoHandler(photo._id)} className="bg-red-600 text-white text-xs py-1 px-2 rounded">Delete</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
 };
+
 export default ManageGalleryPage;
