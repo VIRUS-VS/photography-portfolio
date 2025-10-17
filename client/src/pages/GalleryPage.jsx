@@ -46,7 +46,7 @@ const GalleryPage = () => {
         <p className="text-gray-400 leading-relaxed">{gallery?.description}</p>
       </div>
 
-      {/* Masonry Photo Grid */}
+      {/* Masonry-style Photo Grid */}
       {photos.length > 0 ? (
         <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4">
           {photos.map((photo) => (
