@@ -76,11 +76,8 @@ const GalleryPage = () => {
   const { id } = useParams();
   const [gallery, setGallery] = useState(null);
   const [photos, setPhotos] = useState([]);
-  
-  // --- THESE LINES WERE LIKELY MISSING ---
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // ------------------------------------
 
   useEffect(() => {
     const fetchGalleryAndPhotos = async () => {
@@ -106,7 +103,6 @@ const GalleryPage = () => {
     return /\.(mp4|mov|avi|wmv)$/i.test(url);
   }
 
-  // This conditional rendering is what causes the crash if 'loading' is not defined
   if (loading) return <p className="text-center pt-24">Loading gallery...</p>;
   if (error) return <p className="text-center text-red-500 pt-24">{error}</p>;
 
@@ -115,14 +111,21 @@ const GalleryPage = () => {
       <div className="max-w-4xl mx-auto text-center mb-12">
         <Link to="/" className="text-gray-400 hover:text-white transition mb-4 inline-block">&larr; Back to all work</Link>
         <h1 className="text-4xl font-light mb-4">{gallery?.title}</h1>
-        <p className="text-gray-400 leading-relaxed">{gallery?.description}</p>
+        
+        {/* INCREASE FONT SIZE FOR DESCRIPTION */}
+        <p className="text-gray-400 leading-relaxed text-lg">{gallery?.description}</p> {/* Changed text-base to text-lg */}
         
         {gallery?.credits && (
-          <div className="text-gray-400 mt-6 text-sm whitespace-pre-line">
+          // INCREASE FONT SIZE FOR CREDITS
+          <div className="text-gray-400 mt-6 text-lg whitespace-pre-line"> {/* Changed text-sm to text-lg */}
             {gallery.credits}
           </div>
         )}
       </div>
+      
+      {/* --- ADD EXTRA LINE SPACE HERE (mb-16 for example) --- */}
+      {/* This div acts as a spacer before the photo grid */}
+      <div className="mb-16"></div> 
 
       {photos.length > 0 ? (
         <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4">
