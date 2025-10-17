@@ -53,13 +53,13 @@ const GalleryPage = () => {
             <div key={photo._id} className="mb-4 break-inside-avoid">
                {isVideo(photo.imageUrl) ? (
                 <video
-                  src={photo.imageUrl}
+                  src={photo.imageUrl} // Use the full Cloudinary URL directly
                   controls
                   className="w-full h-auto rounded-lg"
                 />
               ) : (
                 <img
-                  src={photo.imageUrl}
+                  src={photo.imageUrl} // Use the full Cloudinary URL directly
                   alt={photo.caption || gallery?.title}
                   className="w-full h-auto rounded-lg"
                 />
