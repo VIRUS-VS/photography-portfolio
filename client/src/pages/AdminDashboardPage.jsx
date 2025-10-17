@@ -172,9 +172,6 @@ const AdminDashboardPage = () => {
 
         try {
             const config = { headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${adminInfo.token}` } };
-            
-            // --- THIS IS THE CORRECTED LINE ---
-            // The URL must be '/uploads' (plural) to match the backend route
             const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/uploads`, formData, config);
             
             setCoverImage(data.image);
@@ -223,11 +220,20 @@ const AdminDashboardPage = () => {
         <div className="pt-24 container mx-auto px-4">
             <h1 className="text-3xl font-light mb-8">Admin Dashboard</h1>
             
+            {/* --- ADD THIS SECTION BACK --- */}
+            <div className="bg-gray-800 p-6 rounded-lg mb-8">
+                <Link to="/admin/settings" className="text-xl font-semibold text-yellow-400 hover:text-yellow-300">
+                    Manage Site-Wide Settings
+                </Link>
+            </div>
+            {/* --- END OF ADDED SECTION --- */}
+
             <div className="grid md:grid-cols-2 gap-8">
                 {/* Create New Gallery Section */}
                 <div className="bg-gray-800 p-6 rounded-lg">
                     <h2 className="text-2xl font-semibold mb-4 text-yellow-400">Create New Gallery</h2>
                     <form onSubmit={createGalleryHandler}>
+                        {/* Form fields... */}
                         <div className="mb-4">
                             <label htmlFor="title" className="block text-sm mb-1">Title</label>
                             <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-gray-700 p-2 rounded" />
