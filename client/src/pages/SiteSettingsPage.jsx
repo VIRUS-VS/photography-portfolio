@@ -127,12 +127,12 @@ const SiteSettingsPage = () => {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     
-    // State to track individual image uploads for better UX
-    const [imageUploading, setImageUploading] = useState({ 
-        heroImage: false, 
-        aboutImage1: false, 
-        aboutImage2: false, 
-        videoUrl: false 
+    // State to track individual uploads for better UX
+    const [uploadingState, setUploadingState] = useState({
+        heroImage: false,
+        aboutImage1: false,
+        aboutImage2: false,
+        videoUrl: false
     });
 
     const adminInfo = useMemo(() => JSON.parse(localStorage.getItem('adminInfo')), []);
@@ -154,16 +154,14 @@ const SiteSettingsPage = () => {
         }
     }, [adminInfo, navigate]);
 
-    // Handles changes for all text inputs
     const handleInputChange = (e) => setSettings({ ...settings, [e.target.name]: e.target.value });
 
-    // Handles individual image/video uploads
     const handleFileUpload = async (e) => {
         let file = e.target.files[0];
         const fieldName = e.target.name;
         if (!file) return;
 
-        setImageUploading(prev => ({ ...prev, [fieldName]: true }));
+        setUploadingState(prev => ({ ...prev, [fieldName]: true }));
 
         try {
             if (file.type.startsWith('image/') && (file.type === 'image/heic' || file.type === 'image/heif' || file.name.toLowerCase().endsWith('.heic'))) {
@@ -172,17 +170,17 @@ const SiteSettingsPage = () => {
             }
 
             const formData = new FormData();
-            formData.append('image', file); // 'image' is the field name for the generic uploader
+            formData.append('image', file);
             const config = { headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${adminInfo.token}` } };
             
-            // --- THIS IS THE CORRECTED URL ---
+            // This now uses the correct '/api/uploads' (plural) URL
             const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/uploads`, formData, config);
             
             setSettings(prev => ({ ...prev, [fieldName]: data.image }));
         } catch (error) {
             alert('Upload failed. Please try a different file.');
         } finally {
-            setImageUploading(prev => ({ ...prev, [fieldName]: false }));
+            setUploadingState(prev => ({ ...prev, [fieldName]: false }));
         }
     };
 
@@ -208,39 +206,70 @@ const SiteSettingsPage = () => {
             <h1 className="text-3xl font-light mb-6">Site Settings</h1>
             
             <form onSubmit={submitHandler} className="space-y-8">
-                {/* Hero Section */}
+                {/* --- HERO SECTION (RESTORED) --- */}
                 <div className="p-4 border border-gray-700 rounded">
                     <h2 className="text-xl font-semibold mb-4">Hero Section</h2>
-                    {/* ... other hero fields ... */}
-                    <div>
-                        <label className="block text-sm mb-1">Hero Background Image</label>
-                        <input type="file" name="heroImage" onChange={handleFileUpload} className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-gray-700" />
-                        {imageUploading.heroImage && <p className="text-blue-400 text-sm mt-2">Uploading...</p>}
-                        {settings.heroImage && <img src={settings.heroImage} alt="Hero preview" className="mt-2 h-20 object-cover" />}
+                    <div className="space-y-4">
+                        <div><label className="block text-sm mb-1">Hero Title</label><input type="text" name="heroTitle" value={settings.heroTitle || ''} onChange={handleInputChange} className="w-full p-2 bg-gray-800 rounded" /></div>
+                        <div><label className="block text-sm mb-1">Hero Subtitle</label><textarea name="heroSubtitle" value={settings.heroSubtitle || ''} onChange={handleInputChange} className="w-full p-2 bg-gray-800 rounded" rows="3"></textarea></div>
+                        <div>
+                            <label className="block text-sm mb-1">Hero Background Image</label>
+                            <input type="file" name="heroImage" onChange={handleFileUpload} className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-gray-700" />
+                            {uploadingState.heroImage && <p className="text-blue-400 text-sm mt-2">Uploading...</p>}
+                            {settings.heroImage && <img src={settings.heroImage} alt="Hero preview" className="mt-2 h-20 object-cover rounded" />}
+                        </div>
                     </div>
                 </div>
 
-                {/* About Section */}
+                {/* --- ABOUT SECTION (CORRECTED) --- */}
                 <div className="p-4 border border-gray-700 rounded">
                     <h2 className="text-xl font-semibold mb-4">About Section</h2>
-                     {/* ... other about fields ... */}
-                    <div>
-                        <label className="block text-sm mb-1">About Image 1</label>
-                        <input type="file" name="aboutImage1" onChange={handleFileUpload} className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-gray-700" />
-                        {imageUploading.aboutImage1 && <p className="text-blue-400 text-sm mt-2">Uploading...</p>}
-                        {settings.aboutImage1 && <img src={settings.aboutImage1} alt="About 1 preview" className="mt-2 h-20 object-cover" />}
-                    </div>
-                    <div>
-                        <label className="block text-sm mb-1">About Image 2</label>
-                        <input type="file" name="aboutImage2" onChange={handleFileUpload} className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-gray-700" />
-                        {imageUploading.aboutImage2 && <p className="text-blue-400 text-sm mt-2">Uploading...</p>}
-                        {settings.aboutImage2 && <img src={settings.aboutImage2} alt="About 2 preview" className="mt-2 h-20 object-cover" />}
+                    <div className="space-y-4">
+                        <div><label className="block text-sm mb-1">About Title</label><input type="text" name="aboutTitle" value={settings.aboutTitle || ''} onChange={handleInputChange} className="w-full p-2 bg-gray-800 rounded" /></div>
+                        <div><label className="block text-sm mb-1">About Text</label><textarea name="aboutText" value={settings.aboutText || ''} onChange={handleInputChange} className="w-full p-2 bg-gray-800 rounded" rows="3"></textarea></div>
+                        <div>
+                            <label className="block text-sm mb-1">About Image 1</label>
+                            <input type="file" name="aboutImage1" onChange={handleFileUpload} className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-gray-700" />
+                            {uploadingState.aboutImage1 && <p className="text-blue-400 text-sm mt-2">Uploading...</p>}
+                            {settings.aboutImage1 && <img src={settings.aboutImage1} alt="About 1 preview" className="mt-2 h-20 object-cover rounded" />}
+                        </div>
+                        <div>
+                            <label className="block text-sm mb-1">About Image 2</label>
+                            <input type="file" name="aboutImage2" onChange={handleFileUpload} className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-gray-700" />
+                            {uploadingState.aboutImage2 && <p className="text-blue-400 text-sm mt-2">Uploading...</p>}
+                            {settings.aboutImage2 && <img src={settings.aboutImage2} alt="About 2 preview" className="mt-2 h-20 object-cover rounded" />}
+                        </div>
                     </div>
                 </div>
-                
-                {/* ... Other sections (Video, Footer) ... */}
 
-                <button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded" disabled={saving || Object.values(imageUploading).some(status => status)}>
+                {/* --- VIDEO SECTION (RESTORED) --- */}
+                <div className="p-4 border border-gray-700 rounded">
+                    <h2 className="text-xl font-semibold mb-4">Video Section</h2>
+                    <div className="space-y-4">
+                        <div><label className="block text-sm mb-1">Video Title</label><input type="text" name="videoTitle" value={settings.videoTitle || ''} onChange={handleInputChange} className="w-full p-2 bg-gray-800 rounded" /></div>
+                        <div><label className="block text-sm mb-1">Video Text</label><textarea name="videoText" value={settings.videoText || ''} onChange={handleInputChange} className="w-full p-2 bg-gray-800 rounded" rows="3"></textarea></div>
+                        <div>
+                            <label className="block text-sm mb-1">Background Video</label>
+                            <input type="file" name="videoUrl" onChange={handleFileUpload} className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-gray-700" />
+                            {uploadingState.videoUrl && <p className="text-blue-400 text-sm mt-2">Uploading...</p>}
+                            {settings.videoUrl && <p className="text-xs text-gray-400 mt-1">Current: {settings.videoUrl.split('/').pop()}</p>}
+                        </div>
+                    </div>
+                </div>
+
+                {/* --- FOOTER & CONTACT (RESTORED) --- */}
+                <div className="p-4 border border-gray-700 rounded">
+                    <h2 className="text-xl font-semibold mb-4">Footer & Contact</h2>
+                    <div className="space-y-4">
+                        <div><label className="block text-sm mb-1">Contact Email</label><input type="email" name="contactEmail" value={settings.contactEmail || ''} onChange={handleInputChange} className="w-full p-2 bg-gray-800 rounded" /></div>
+                        <div><label className="block text-sm mb-1">Contact Phone</label><input type="text" name="contactPhone" value={settings.contactPhone || ''} onChange={handleInputChange} className="w-full p-2 bg-gray-800 rounded" /></div>
+                        <div><label className="block text-sm mb-1">Instagram URL</label><input type="text" name="instagramUrl" value={settings.instagramUrl || ''} onChange={handleInputChange} className="w-full p-2 bg-gray-800 rounded" /></div>
+                        <div><label className="block text-sm mb-1">Facebook URL</label><input type="text" name="facebookUrl" value={settings.facebookUrl || ''} onChange={handleInputChange} className="w-full p-2 bg-gray-800 rounded" /></div>
+                        <div><label className="block text-sm mb-1">Twitter URL</label><input type="text" name="twitterUrl" value={settings.twitterUrl || ''} onChange={handleInputChange} className="w-full p-2 bg-gray-800 rounded" /></div>
+                    </div>
+                </div>
+
+                <button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded" disabled={saving || Object.values(uploadingState).some(status => status)}>
                     {saving ? 'Saving...' : 'Save All Settings'}
                 </button>
             </form>
