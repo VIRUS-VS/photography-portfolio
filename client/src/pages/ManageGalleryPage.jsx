@@ -153,11 +153,9 @@ const ManageGalleryPage = () => {
     const [uploading, setUploading] = useState(false);
     const [uploadError, setUploadError] = useState(null);
 
-    // --- 1. ADD NEW STATE FOR COVER IMAGE MANAGEMENT ---
     const [coverImageFile, setCoverImageFile] = useState(null);
     const [coverImageUploading, setCoverImageUploading] = useState(false);
     
-    // State for the editable text fields
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [credits, setCredits] = useState('');
@@ -165,7 +163,6 @@ const ManageGalleryPage = () => {
     const adminInfo = useMemo(() => JSON.parse(localStorage.getItem('adminInfo')), []);
 
     const fetchGalleryAndPhotos = async () => {
-        // ... (This function remains the same)
         try {
             setLoading(true);
             const config = { headers: { Authorization: `Bearer ${adminInfo.token}` } };
@@ -191,34 +188,30 @@ const ManageGalleryPage = () => {
         else fetchGalleryAndPhotos();
     }, [id, adminInfo, navigate]);
 
-    // --- 2. MODIFY THE UPDATE HANDLER ---
     const handleUpdateDetails = async (e) => {
         e.preventDefault();
         try {
-            let coverImageUrl = gallery.coverImage; // Start with the existing image URL
+            let coverImageUrl = gallery.coverImage;
 
-            // If a new file has been selected, upload it first
             if (coverImageFile) {
                 setCoverImageUploading(true);
                 const formData = new FormData();
-                formData.append('image', coverImageFile); // 'image' must match your upload route's field name
+                formData.append('image', coverImageFile);
                 const config = { headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${adminInfo.token}` } };
                 
-                // Use your generic single-file upload route
                 const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/uploads`, formData, config);
-                coverImageUrl = data.image; // Get the new URL from the response
+                coverImageUrl = data.image;
                 setCoverImageUploading(false);
             }
 
             const config = { headers: { Authorization: `Bearer ${adminInfo.token}` } };
             const payload = { title, description, credits, coverImage: coverImageUrl };
             
-            // Update the gallery with all new details
             const { data: updatedGallery } = await axios.put(`${import.meta.env.VITE_API_URL}/api/galleries/${id}`, payload, config);
             
             alert('Gallery details updated successfully!');
-            setGallery(updatedGallery); // Update the local state with the latest gallery data
-            setCoverImageFile(null); // Clear the selected file
+            setGallery(updatedGallery);
+            setCoverImageFile(null);
 
         } catch (error) {
             setCoverImageUploading(false);
@@ -226,7 +219,6 @@ const ManageGalleryPage = () => {
         }
     };
     
-    // ... (uploadFilesHandler, deletePhotoHandler, etc. remain the same) ...
     const uploadFilesHandler = async (e) => {
         const files = e.target.files;
         if (!files || files.length === 0) return;
@@ -281,7 +273,6 @@ const ManageGalleryPage = () => {
 
     const isVideo = (url) => url && url.match(/\.(mp4|mov)$/);
 
-
     if (loading) return <p className="text-center pt-24">Loading...</p>;
     if (error) return <p className="text-red-500 text-center pt-24">{error}</p>;
 
@@ -296,11 +287,9 @@ const ManageGalleryPage = () => {
                 <button onClick={deleteGalleryHandler} className="bg-red-800 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Delete Entire Gallery</button>
             </div>
             
-            {/* --- 3. ADD THE COVER IMAGE UI TO THE FORM --- */}
+            {/* --- SECTION 1: EDIT GALLERY DETAILS (WITH THUMBNAIL) --- */}
             <form onSubmit={handleUpdateDetails} className="bg-gray-800 p-6 rounded-lg mb-8">
                 <h3 className="text-xl font-light mb-4">Edit Gallery Details</h3>
-                
-                {/* Text Fields */}
                 <div className="mb-4">
                     <label htmlFor="title" className="block text-sm font-medium text-gray-400 mb-1">Title</label>
                     <input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white" />
@@ -313,38 +302,45 @@ const ManageGalleryPage = () => {
                     <label htmlFor="credits" className="block text-sm font-medium text-gray-400 mb-1">Credits</label>
                     <textarea id="credits" rows="5" placeholder="e.g.,&#10;Wedding Planner: Seven Steps&#10;Outfit: Sabyasachi" value={credits} onChange={(e) => setCredits(e.target.value)} className="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white"></textarea>
                 </div>
-                
-                {/* Cover Image Section */}
                 <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-400 mb-2">Cover Image (Thumbnail)</label>
                     <div className="flex items-center gap-4">
                         <img src={gallery?.coverImage} alt="Current Cover" className="w-32 h-20 object-cover rounded-md border border-gray-600" />
                         <div>
-                            <label htmlFor="cover-image-upload" className="cursor-pointer bg-gray-700 hover:bg-gray-600 text-white text-sm py-2 px-3 rounded-md">
-                                Choose New Image
-                            </label>
-                            <input
-                                type="file"
-                                id="cover-image-upload"
-                                className="hidden"
-                                onChange={(e) => setCoverImageFile(e.target.files[0])}
-                            />
+                            <label htmlFor="cover-image-upload" className="cursor-pointer bg-gray-700 hover:bg-gray-600 text-white text-sm py-2 px-3 rounded-md">Choose New Image</label>
+                            <input type="file" id="cover-image-upload" className="hidden" onChange={(e) => setCoverImageFile(e.target.files[0])} />
                             {coverImageFile && <span className="ml-3 text-sm text-gray-400">{coverImageFile.name}</span>}
                         </div>
                     </div>
                 </div>
-
                 <button type="submit" className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded" disabled={coverImageUploading}>
                     {coverImageUploading ? 'Uploading Image...' : 'Save All Changes'}
                 </button>
             </form>
             
-            {/* The rest of the page (upload form, photos) remains the same */}
+            {/* --- SECTION 2: UPLOAD NEW GALLERY IMAGES (RESTORED) --- */}
             <div className="bg-gray-800 p-6 rounded-lg mb-8">
-                {/* ... Photo upload form ... */}
+                <h3 className="text-xl font-light mb-4">Upload New Photos/Videos to Gallery</h3>
+                <input type="file" id="image-files" onChange={uploadFilesHandler} className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:font-semibold file:bg-gray-700 file:text-gray-200 hover:file:bg-gray-600" multiple />
+                {uploading && <p className="text-blue-400 text-sm mt-2">Uploading...</p>}
+                {uploadError && <p className="text-red-500 text-sm mt-2">{uploadError}</p>}
             </div>
+            
+            {/* --- SECTION 3: VIEW EXISTING GALLERY IMAGES (RESTORED) --- */}
             <div>
-                {/* ... photos grid ... */}
+                <h3 className="text-xl font-light mb-4">Uploaded Photos</h3>
+                {photos.length === 0 ? <p className="text-gray-500">No photos uploaded yet.</p> : (
+                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        {photos.map(photo => (
+                            <div key={photo._id} className="relative group">
+                                {isVideo(photo.imageUrl) ? <video src={photo.imageUrl} className="w-full h-40 object-cover rounded-lg" /> : <img src={photo.imageUrl} alt="" className="w-full h-40 object-cover rounded-lg" />}
+                                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
+                                    <button onClick={() => deletePhotoHandler(photo._id)} className="bg-red-600 text-white text-xs py-1 px-2 rounded">Delete</button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );
