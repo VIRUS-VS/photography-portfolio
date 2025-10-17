@@ -80,6 +80,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 
+// This is the PUBLIC page. It must use the PUBLIC routes.
 const GalleryPage = () => {
   const { id } = useParams();
   const [gallery, setGallery] = useState(null);
@@ -91,10 +92,10 @@ const GalleryPage = () => {
     const fetchGalleryAndPhotos = async () => {
       try {
         setLoading(true);
+        // Public requests do not need a token
         const galleryRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/galleries/${id}`);
         
-        // --- THIS IS THE CORRECTED LINE ---
-        // We now call the public '/view/' route which does not require a login
+        // THIS IS THE FIX: Use the public '/view/' route
         const photosRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/photos/view/${id}`);
         
         setGallery(galleryRes.data);
@@ -117,6 +118,7 @@ const GalleryPage = () => {
   if (loading) return <p className="text-center pt-24">Loading gallery...</p>;
   if (error) return <p className="text-center text-red-500 pt-24">{error}</p>;
 
+  // Your JSX for displaying the gallery publicly
   return (
     <div className="pt-24 container mx-auto px-4"> 
       <div className="max-w-4xl mx-auto text-center mb-12">
@@ -124,7 +126,6 @@ const GalleryPage = () => {
         <h1 className="text-4xl font-light mb-4">{gallery?.title}</h1>
         <p className="text-gray-400 leading-relaxed">{gallery?.description}</p>
       </div>
-
       {photos.length > 0 ? (
         <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4">
           {photos.map((photo) => (
