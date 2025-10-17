@@ -1,5 +1,5 @@
 const Photo = require('../models/photoModel');
-const Gallery = require('../models/galleryModel'); // This is the corrected line
+const Gallery = require('../models/galleryModel');
 const cloudinary = require('cloudinary').v2;
 
 // ... the rest of the file remains the same ...
@@ -37,5 +37,3 @@ const deletePhoto = async (req, res) => {
 };
 
 module.exports = { uploadPhotos, getPhotosForGallery, deletePhoto };
-
-//new code
