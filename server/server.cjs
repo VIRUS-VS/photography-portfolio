@@ -15,7 +15,7 @@ connectDB();
 const app = express();
 
 // --- START OF THE CRUCIAL FIX ---
-// Create a whitelist of allowed domains
+// Create a whitelist of all allowed domains
 const allowedOrigins = [
   'https://photography-portfolio-three-delta.vercel.app', // Your Vercel domain
   'https://theluxevows.com',                            // Your custom domain
