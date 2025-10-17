@@ -1,71 +1,69 @@
-// In frontend/src/pages/GalleryPage.jsx
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import api from '../api/axios.js'; // <-- 1. CHANGE THIS IMPORT
+import { useParams, Link } from 'react-router-dom';
+import axios from 'axios'; // CORRECT: Import axios directly
 
 const GalleryPage = () => {
   const { id } = useParams();
   const [gallery, setGallery] = useState(null);
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchGalleryData = async () => {
+    const fetchGalleryAndPhotos = async () => {
       try {
         setLoading(true);
-        // 2. USE 'api' INSTEAD OF 'axios'
-        const { data: galleryData } = await api.get(`/api/galleries/${id}`);
-        setGallery(galleryData);
-
-        const { data: photosData } = await api.get(`/api/photos/gallery/${id}`);
-        setPhotos(photosData);
-
-      } catch (error) {
-        console.error("Failed to fetch gallery data", error);
+        // Use the environment variable for the live API URL
+        const galleryRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/galleries/${id}`);
+        const photosRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/photos/${id}`);
+        setGallery(galleryRes.data);
+        setPhotos(photosRes.data);
+      } catch (err) {
+        setError('Could not fetch gallery details.');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchGalleryData();
+    fetchGalleryAndPhotos();
   }, [id]);
+  
+  const isVideo = (url) => {
+    if (!url) return false;
+    return url.match(/\.(mp4|mov)$/);
+  }
 
-  if (loading) return <p>Loading gallery...</p>;
-  if (!gallery) return <p>Gallery not found.</p>;
-
-  const getYouTubeEmbedUrl = (url) => {
-    if (!url) return '';
-    const videoIdMatch = url.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})(?=&|$)/);
-    return videoIdMatch ? `https://www.youtube.com/embed/${videoIdMatch[1]}` : '';
-  };
+  if (loading) return <p className="text-center pt-24">Loading gallery...</p>;
+  if (error) return <p className="text-center text-red-500 pt-24">{error}</p>;
 
   return (
-    <div className="container mx-auto p-8">
-      <img src={gallery.coverImage} alt={gallery.title} className="w-full h-96 object-cover rounded-lg mb-8" />
-      <h1 className="text-4xl font-bold mb-4">{gallery.title}</h1>
-      <p className="text-lg text-gray-400 mb-12">{gallery.description}</p>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-12">
-        {photos.map(photo => (
-          <div key={photo._id} className="overflow-hidden rounded-lg">
-            <img src={photo.imageUrl} alt="Gallery" className="w-full h-full object-cover" />
+    <div className="pt-24 container mx-auto px-4"> 
+      <div className="max-w-4xl mx-auto text-center mb-12">
+        <Link to="/" className="text-blue-400 hover:underline mb-4 inline-block">&larr; Back to all work</Link>
+        <h1 className="text-4xl font-light mb-4">{gallery?.title}</h1>
+        <p className="text-gray-400 leading-relaxed">{gallery?.description}</p>
+      </div>
+
+      {/* Photo Grid */}
+      <div className="columns-1 md:columns-2 lg:columns-3 gap-4">
+        {photos.map((photo) => (
+          <div key={photo._id} className="mb-4 break-inside-avoid">
+             {isVideo(photo.imageUrl) ? (
+              <video
+                src={photo.imageUrl}
+                controls
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <img
+                src={photo.imageUrl}
+                alt={photo.caption || gallery?.title}
+                className="w-full h-full object-cover"
+              />
+            )}
           </div>
         ))}
       </div>
-      {gallery.youtubeLink && getYouTubeEmbedUrl(gallery.youtubeLink) && (
-        <div>
-          <h2 className="text-3xl font-bold mb-4">Watch The Film</h2>
-          <div className="aspect-w-16 aspect-h-9">
-            <iframe
-              src={getYouTubeEmbedUrl(gallery.youtubeLink)}
-              title="YouTube video player"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="w-full h-full"
-            ></iframe>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
