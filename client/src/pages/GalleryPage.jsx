@@ -31,7 +31,7 @@ const GalleryPage = () => {
   
   const isVideo = (url) => {
     if (!url) return false;
-    // Use a simple regex to check for video file extensions
+    // A simple regex to check for common video file extensions
     return /\.(mp4|mov|avi|wmv)$/i.test(url);
   }
 
