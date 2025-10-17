@@ -46,22 +46,22 @@ const GalleryPage = () => {
         <p className="text-gray-400 leading-relaxed">{gallery?.description}</p>
       </div>
 
-      {/* Standard Photo Grid */}
+      {/* Masonry Photo Grid */}
       {photos.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4">
           {photos.map((photo) => (
-            <div key={photo._id} className="w-full h-64">
+            <div key={photo._id} className="mb-4 break-inside-avoid">
                {isVideo(photo.imageUrl) ? (
                 <video
                   src={photo.imageUrl}
                   controls
-                  className="w-full h-full object-cover rounded-lg"
+                  className="w-full h-auto rounded-lg"
                 />
               ) : (
                 <img
                   src={photo.imageUrl}
                   alt={photo.caption || gallery?.title}
-                  className="w-full h-full object-cover rounded-lg"
+                  className="w-full h-auto rounded-lg"
                 />
               )}
             </div>
